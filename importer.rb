@@ -49,6 +49,16 @@ end
 
 
 p "-- Importing: #{$import_file}"
-login!($user, $password)
-batch_import($import_file)
+file_contents = File.read($import_file)
+file_contents.gsub!(/REPO_ID_GOES_HERE/, $repo_id)
+tmp_file = Tempfile.new('foo')
+File.open(tmp_file, "w") {|file| file.puts file_contents }
+
+begin
+  login!($user, $password)
+  batch_import(tmp_file.path)
+ensure
+  tmp_file.unlink if tmp_file
+end
+
 p "-- DONE"

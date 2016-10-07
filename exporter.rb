@@ -1,4 +1,5 @@
 require_relative 'service'
+require 'securerandom'
 
 def show_usage
   raise "Usage: #{$0} <backend URL> <repo id> <username> <password>"
@@ -17,6 +18,11 @@ export_file = File.join($basedir, "exported_#{Time.now.to_i}.json")
 
 @exported_uris = []
 @linked_uris = []
+
+def prepare_record_for_export(record)
+  record.delete('id')
+  record.to_json
+end
 
 def extract_links(hash_or_array)
   uris = []
@@ -60,7 +66,7 @@ File.open(export_file, "w") do |out|
           end
         end
 
-        out.puts(record.to_json)
+        out.puts(prepare_record_for_export(record))
       }
       out.puts ","
     end
@@ -86,7 +92,7 @@ File.open(export_file, "w") do |out|
         end
       end
 
-      out.puts(record.to_json)
+      out.puts(prepare_record_for_export(record))
     end
 
     break if @linked_uris.empty?
@@ -98,8 +104,14 @@ File.open(export_file, "w") do |out|
   out.puts "]"
 end
 
-
+file_contents = File.read(export_file)
+@exported_uris.each do |uri|
+  import_uri = uri.clone.gsub(/\d+$/, "import_#{SecureRandom.hex}")
+  p "Change #{uri} to #{import_uri}"
+  file_contents.gsub!(/#{uri}/, import_uri)
+end
+file_contents.gsub!(/#{@service.repo_uri}/, "/repositories/REPO_ID_GOES_HERE")
+File.open(export_file, "w") {|file| file.puts file_contents }
 
 p "--"
 p "-- Output file: #{export_file}"
-p "-- URIs exported: #{@exported_uris}"
