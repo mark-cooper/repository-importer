@@ -105,11 +105,6 @@ File.open(export_file, "w") do |out|
 end
 
 file_contents = File.read(export_file)
-@exported_uris.each do |uri|
-  import_uri = uri.clone.gsub(/\d+$/, "import_#{SecureRandom.hex}")
-  p "Change #{uri} to #{import_uri}"
-  file_contents.gsub!(/#{uri}/, import_uri)
-end
 file_contents.gsub!(/#{@service.repo_uri}/, "/repositories/REPO_ID_GOES_HERE")
 File.open(export_file, "w") {|file| file.puts file_contents }
 
