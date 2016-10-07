@@ -46,22 +46,19 @@ class Service
   end
 
   def get(path, params = {})
-    request = Net::HTTP::Get.new(build_url(path, params))
+    url = build_url(path, params)
+    request = Net::HTTP::Get.new(url.request_uri)
 
-    do_http_request(request)
+    do_http_request(url, params, request)
   end
 
 
-
-  def do_http_request(request)
-    url = request.uri
-
-    http = Net::HTTP.new(url.host, url.port)
-    http.use_ssl = true if url.scheme == 'https'
-
-    request['X-ArchivesSpace-Session'] = @session
-
-    http.request(request)
+  def do_http_request(url, params = {}, request)
+    Net::HTTP.start(url.host, url.port) {|http|
+      http.use_ssl = true if url.scheme == 'https'
+      request['X-ArchivesSpace-Session'] = @session
+      http.request(request)
+    }
   end
 
 
@@ -70,10 +67,7 @@ class Service
 
     url = build_url(path)
 
-    request = Net::HTTP::Post.new(url)
-    request.form_data = {:password => @password, :expiring => false}
-
-    response = do_http_request(request)
+    response = Net::HTTP.post_form(url, {:password => @password, :expiring => false})
 
     if response.code != '200'
       raise LoginFailedException.new("#{response.code}: #{response.body}")
