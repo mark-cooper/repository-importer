@@ -79,7 +79,7 @@ class Service
   end
 
   def build_url(path, params = {})
-    result = URI.join(@backend_url, path)
+    result = URI.join(@backend_url, path.gsub(/^\//, ""))
     result.query = URI.encode_www_form(params)
     result
   end
