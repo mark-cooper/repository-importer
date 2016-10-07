@@ -49,7 +49,7 @@ end
 File.open(export_file, "w") do |out|
   out.puts("[")
 
-  records_to_import = ['resource', 'archival_object', 'digital_object', 'digital_object_component', 'accession']
+  records_to_import = ['resource', 'archival_object', 'digital_object', 'digital_object_component', 'accession', 'classification']
 
   records_to_import.each do |record_type|
     p "-- Get all of type: #{record_type}"
