@@ -39,8 +39,9 @@ end
 
 
 def batch_import(file)
-  JSONModel::HTTP.post_json_file(URI.join(JSONModel::HTTP.backend_url, "/repositories/#{$repo_id}/batch_imports?skip_results=true&migration=true"),
-                                 file) do |response|
+  backend_uri = URI(File.join(JSONModel::HTTP.backend_url, "/repositories/#{$repo_id}/batch_imports?skip_results=true&migration=true"))
+  p "-- Target: #{backend_uri.to_s}"
+  JSONModel::HTTP.post_json_file(backend_uri, file) do |response|
     response.read_body do |chunk|
       p chunk
     end

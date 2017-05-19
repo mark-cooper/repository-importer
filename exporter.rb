@@ -14,14 +14,14 @@ $basedir = File.expand_path(File.join(File.dirname(__FILE__)))
 
 @service = Service.new($backend_url, $repo_id, $user, $password)
 
-export_file = File.join($basedir, "exported_#{Time.now.to_i}.json")
+export_file = File.join($basedir, "exported_#{$repo_id}.json")
 
 @exported_uris = []
 @linked_uris = []
 
 def prepare_record_for_export(record)
   record.delete('id')
-  record.to_json
+  record
 end
 
 def extract_links(hash_or_array)
@@ -47,7 +47,7 @@ def extract_links(hash_or_array)
 end
 
 File.open(export_file, "w") do |out|
-  out.puts("[")
+  exported_records = []
 
   records_to_import = ['resource', 'archival_object', 'digital_object', 'digital_object_component', 'accession', 'classification']
 
@@ -66,9 +66,8 @@ File.open(export_file, "w") do |out|
           end
         end
 
-        out.puts(prepare_record_for_export(record))
+        exported_records << prepare_record_for_export(record)
       }
-      out.puts ","
     end
   end
 
@@ -92,7 +91,7 @@ File.open(export_file, "w") do |out|
         end
       end
 
-      out.puts(prepare_record_for_export(record))
+      exported_records << prepare_record_for_export(record)
     end
 
     break if @linked_uris.empty?
@@ -100,8 +99,7 @@ File.open(export_file, "w") do |out|
     p "-- #{@linked_uris.length} linked records to go"
   end
 
-
-  out.puts "]"
+  out.puts exported_records.to_json
 end
 
 file_contents = File.read(export_file)
