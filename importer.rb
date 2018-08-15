@@ -13,6 +13,8 @@ $import_file = ARGV.fetch(4) { show_usage }
 
 $basedir = File.expand_path(File.join(File.dirname(__FILE__)))
 
+puts({ backend_url: $backend_url, repo_id: $repo_id, user: $user, password: $password, import_file: $import_file })
+
 include JSONModel
 
 class PermissiveValidator

@@ -1,0 +1,20 @@
+rvm:
+  - 2.2.8
+  - 2.3.5
+  - 2.4.2
+  - ruby-head
+  - jruby-9.1.14.0
+
+matrix:
+  allow_failures:
+    - rvm: jruby-9.1.14.0
+
+before_script:
+  - unset JRUBY_OPTS
+
+script: rake
+
+addons:
+  apt:
+    packages:
+      - haveged

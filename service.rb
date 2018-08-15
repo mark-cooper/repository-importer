@@ -54,8 +54,7 @@ class Service
 
 
   def do_http_request(url, params = {}, request)
-    Net::HTTP.start(url.host, url.port) {|http|
-      http.use_ssl = true if url.scheme == 'https'
+    Net::HTTP.start(url.host, url.port, :use_ssl => url.scheme == 'https') {|http|
       request['X-ArchivesSpace-Session'] = @session
       http.request(request)
     }

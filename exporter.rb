@@ -10,6 +10,8 @@ $repo_id = ARGV.fetch(1) { show_usage }
 $user = ARGV.fetch(2) { show_usage }
 $password = ARGV.fetch(3) { show_usage }
 
+puts({ backend_url: $backend_url, repo_id: $repo_id, user: $user, password: $password })
+
 $basedir = File.expand_path(File.join(File.dirname(__FILE__)))
 
 @service = Service.new($backend_url, $repo_id, $user, $password)
